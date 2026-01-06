@@ -1,0 +1,15 @@
+{
+  "name": "crypto-auditor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "A ruthless AI Crypto Auditor that analyzes whitepapers for red flags, tokenomics flaws, and potential scams.",
+  "scripts": {
+    "start": "node audit.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "openai": "^6.15.0",
+    "pdf-parse": "1.1.1"
+  }
+}
