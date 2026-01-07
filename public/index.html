@@ -43,8 +43,9 @@
             width: 100%;
             font-family: inherit;
             font-weight: bold;
+            border-radius: 5px;
         }
-        button:hover { background-color: #2ea043; }
+        button:hover { filter: brightness(1.1); }
         button:disabled { background-color: #30363d; cursor: not-allowed; }
         #result {
             margin-top: 20px;
@@ -58,73 +59,101 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>🕵️‍♂️ Ruthless Auditor</h1>
-        <p style="text-align: center; opacity: 0.7;">AI Anti-Scam. Upload Whitepaper (PDF), terima kenyataan pahit.</p>
         
-        <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
-        <div class="upload-area" onclick="document.getElementById('pdfFile').click()">
-            <span id="fileName">Klik untuk pilih file PDF...</span>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+            <button onclick="switchMode('pdf')" id="btnPdf" style="background: #238636; opacity: 1;">📄 Audit Whitepaper (PDF)</button>
+            <button onclick="switchMode('contract')" id="btnContract" style="background: #30363d; opacity: 0.6;">👾 Audit Smart Contract</button>
         </div>
 
-        <button id="auditBtn" onclick="startAudit()">MULAI AUDIT KEJAM</button>
+        <div id="modePdf">
+            <p style="text-align: center; opacity: 0.7;">Upload Whitepaper, cari kebohongan narasi.</p>
+            <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+            <div class="upload-area" onclick="document.getElementById('pdfFile').click()">
+                <span id="fileName">Klik untuk pilih file PDF...</span>
+            </div>
+            <button onclick="startAuditPDF()" id="auditBtnPdf">AUDIT WHITEPAPER</button>
+        </div>
+
+        <div id="modeContract" style="display: none;">
+            <p style="text-align: center; opacity: 0.7;">Tempel Address Contract (Verified Etherscan Only).</p>
+            <input type="text" id="contractAddress" placeholder="Contoh: 0xdAC17F958D2ee523a2206206994597C13D831ec7" 
+                   style="width: 90%; padding: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px; margin-bottom: 20px;">
+            <button onclick="startAuditContract()" id="auditBtnContract">AUDIT CODE</button>
+        </div>
 
         <div id="loading" class="loading">
             <br>
-            Sedang membaca... Sedang mencari kebohongan...<br>
-            (Ini memakan waktu 10-20 detik tergantung ketebalan PDF)
+            <span id="loadingText">Sedang membaca pikiran developer...</span>
         </div>
-
         <div id="result"></div>
     </div>
 
     <script>
+        // Logika Ganti Tab
+        function switchMode(mode) {
+            document.getElementById('result').style.display = 'none';
+            if(mode === 'pdf') {
+                document.getElementById('modePdf').style.display = 'block';
+                document.getElementById('modeContract').style.display = 'none';
+                document.getElementById('btnPdf').style.opacity = '1';
+                document.getElementById('btnContract').style.opacity = '0.6';
+            } else {
+                document.getElementById('modePdf').style.display = 'none';
+                document.getElementById('modeContract').style.display = 'block';
+                document.getElementById('btnPdf').style.opacity = '0.6';
+                document.getElementById('btnContract').style.opacity = '1';
+            }
+        }
+
         const fileInput = document.getElementById('pdfFile');
         const fileNameDisplay = document.getElementById('fileName');
         
         fileInput.addEventListener('change', function() {
-            if(this.files && this.files[0]) {
-                fileNameDisplay.textContent = "📄 " + this.files[0].name;
-            }
+            if(this.files && this.files[0]) fileNameDisplay.textContent = "📄 " + this.files[0].name;
         });
 
-        async function startAudit() {
-            if (!fileInput.files[0]) {
-                alert("Pilih file dulu, bos!");
-                return;
-            }
+        // AUDIT PDF (Kode Lama)
+        async function startAuditPDF() {
+            if (!fileInput.files[0]) { alert("Pilih file dulu!"); return; }
+            runAudit('/audit', 'POST', (formData) => formData.append('whitepaper', fileInput.files[0]), true);
+        }
 
-            const formData = new FormData();
-            formData.append('whitepaper', fileInput.files[0]);
+        // AUDIT CONTRACT (Kode Baru)
+        async function startAuditContract() {
+            const address = document.getElementById('contractAddress').value;
+            if (!address.startsWith('0x')) { alert("Address harus mulai dengan 0x!"); return; }
+            
+            runAudit('/audit-contract', 'POST', (data) => JSON.stringify({ contractAddress: address }), false);
+        }
 
-            document.getElementById('auditBtn').disabled = true;
+        // Fungsi Generik buat manggil Server
+        async function runAudit(endpoint, method, bodyBuilder, isFormData) {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('result').style.display = 'none';
-
+            document.getElementById('loadingText').innerText = "Sedang membedah data... DeepSeek sedang berpikir keras...";
+            
             try {
-                const response = await fetch('/audit', {
-                    method: 'POST',
-                    body: formData
-                });
-                
+                const body = isFormData ? new FormData() : bodyBuilder();
+                if (isFormData) bodyBuilder(body); // Execute callback to append data
+
+                const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
+
+                const response = await fetch(endpoint, { method, body, headers });
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Tampilkan hasil
-                    const report = data.report
-                        .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ffcccc;">$1</strong>') // Bikin bold jadi agak merah
-                        .replace(/🚩/g, '<br>🚩'); 
-
+                    const report = data.report.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ffcccc;">$1</strong>').replace(/🚩|🐛|🍯/g, '<br>$&'); 
                     document.getElementById('result').innerHTML = report;
                     document.getElementById('result').style.display = 'block';
                 } else {
                     alert("Error: " + data.error);
                 }
             } catch (err) {
-                alert("Gagal koneksi ke server.");
+                alert("Gagal koneksi. Cek console.");
+                console.error(err);
             } finally {
-                document.getElementById('auditBtn').disabled = false;
                 document.getElementById('loading').style.display = 'none';
             }
         }
