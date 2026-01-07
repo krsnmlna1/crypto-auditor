@@ -70,7 +70,7 @@ app.post('/audit', upload.single('whitepaper'), async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7860;
 if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
