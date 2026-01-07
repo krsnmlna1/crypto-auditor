@@ -87,16 +87,26 @@ app.post('/audit-contract', async (req, res) => {
 
         // 1. Tarik Kode dari Etherscan
         const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
-        // Default ke API Key gratisan kalau env kosong (fallback darurat)
-        const apiKey = etherscanApiKey || "YourEtherscanAPIKey"; 
         
-        const url = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${contractAddress}&apikey=${apiKey}`;
+        // Update ke API V2 (Wajib Chain ID)
+        // Chain ID 1 = Ethereum Mainnet
+        let url = `https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=${contractAddress}`;
+        // Hanya tempel API Key kalau user sudah set di .env / Secrets
+        if (etherscanApiKey) {
+            url += `&apikey=${etherscanApiKey}`;
+        }
         
         const response = await fetch(url);
         const data = await response.json();
 
+        // LOGGING BUAT DEBUGGING
+        console.log("Status Etherscan:", data.message);
+        console.log("Result Etherscan:", data.result);
+
         if (data.message !== 'OK' || !data.result[0].SourceCode) {
-            throw new Error("Gagal ambil kode. Mungkin contract belum diverifikasi atau alamat salah.");
+            // Tampilkan pesan error asli dari Etherscan biar tau kenapa
+            const errorMessage = typeof data.result === 'string' ? data.result : "Gagal ambil kode/Contract tidak verified";
+            throw new Error(`Etherscan Error: ${errorMessage}`);
         }
 
         let sourceCode = data.result[0].SourceCode;
