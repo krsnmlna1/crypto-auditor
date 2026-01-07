@@ -54,7 +54,7 @@ app.post('/audit', upload.single('whitepaper'), async (req, res) => {
         `;
 
         const completion = await openai.chat.completions.create({
-            model: "deepseek/deepseek-r1-distill-llama-70b",
+            model: "google/gemini-2.0-flash-001",
             messages: [{ role: "user", content: prompt }]
         });
 
