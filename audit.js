@@ -74,7 +74,7 @@ async function auditWhitepaper(filename) {
 
 // --- RUN HERE ---
 // Make sure the filename matches the one in your folder
-const targetFile = "target.pdf"; 
+const targetFile = "solana-whitepaper.pdf"; 
 
 if (fs.existsSync(targetFile)) {
     auditWhitepaper(targetFile);
