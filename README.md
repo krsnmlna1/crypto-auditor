@@ -22,10 +22,6 @@ _Don't get rugged. Let AI roast the red flags first._
 
 [**View Demo**](https://huggingface.co/spaces/krsnmlna1/crypto-auditor) · [**Installation**](#-installation) · [**Report Bug**](https://github.com/your-username/crypto-auditor/issues)
 
-<br>
-
-</div>
-
 ---
 
 ## ⚡ Features
