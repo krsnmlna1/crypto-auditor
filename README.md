@@ -20,7 +20,7 @@ _Don't get rugged. Let AI roast the red flags first._
 [![Node.js](https://img.shields.io/badge/Runtime-Node.js-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Deploy-Docker-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-[**View Demo**](#-demo) · [**Installation**](#-installation) · [**Report Bug**](https://github.com/your-username/crypto-auditor/issues)
+[**View Demo**](https://huggingface.co/spaces/krsnmlna1/crypto-auditor) · [**Installation**](#-installation) · [**Report Bug**](https://github.com/your-username/crypto-auditor/issues)
 
 <br>
 
