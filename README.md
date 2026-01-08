@@ -24,8 +24,6 @@ _Don't get rugged. Let AI roast the red flags first._
 
 <br>
 
-![Demo Audit](assets/demo.gif)
-
 </div>
 
 ---
