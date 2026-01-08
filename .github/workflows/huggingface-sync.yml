@@ -18,4 +18,6 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://krsnmlna747:$HF_TOKEN@huggingface.co/spaces/krsnmlna747/crypto-auditor main
+        run: |
+          git lfs install
+          git push --force https://krsnmlna747:$HF_TOKEN@huggingface.co/spaces/krsnmlna747/crypto-auditor main
