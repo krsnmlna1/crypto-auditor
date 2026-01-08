@@ -20,4 +20,4 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git lfs install
-          git push --force https://krsnmlna747:$HF_TOKEN@huggingface.co/spaces/krsnmlna747/crypto-auditor main
+          git push --force https://krsnmlna1:$HF_TOKEN@huggingface.co/spaces/krsnmlna1/crypto-auditor main
